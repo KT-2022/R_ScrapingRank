@@ -7,7 +7,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flet: ^0.22.0  # 最新バージョンを確認してください
+  flet: ^0.22.1  # 最新バージョンを指定
 
 flutter:
   assets:

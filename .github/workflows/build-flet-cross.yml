@@ -39,13 +39,11 @@ jobs:
         with:
           channel: 'stable'
       - name: "Clean Flutter Project"
-        run: |
-          cd ${{ github.workspace }}  # プロジェクトのルートディレクトリに移動
-          flutter clean
+        run: flutter clean
+      - name: "Upgrade Dependencies"
+        run: flutter pub upgrade
       - name: "Install Dependencies"
-        run: |
-          cd ${{ github.workspace }}  # プロジェクトのルートディレクトリに移動
-          flutter pub get
+        run: flutter pub get
       - run: pip install -r requirements.txt
       - name: "Install GStreamer libraries"
         if: runner.os == 'Linux'
