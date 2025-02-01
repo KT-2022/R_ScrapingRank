@@ -37,9 +37,8 @@ jobs:
           python-version: '3.12'
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.10.0'  # 特定のバージョンに固定
           channel: 'stable'
-      - name: "Set Flutter Version"
-        run: flutter version 3.10.0  # 特定のバージョンに固定
       - name: "Clean Flutter Project"
         run: flutter clean
       - name: "Upgrade Dependencies"
