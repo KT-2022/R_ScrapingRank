@@ -1,4 +1,21 @@
+name: build-flet-cross
+on:
+  pull_request:
+    branches:
+      - main
+
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Create Release"
+        run: gh release create ${{github.head_ref}} --draft --notes "Release ${{github.head_ref}}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   cross-build:
     needs: create-release
     strategy:
