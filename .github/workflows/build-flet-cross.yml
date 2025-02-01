@@ -41,9 +41,11 @@ jobs:
         with:
           channel: 'stable'
       - run: pip install -r requirements.txt
-      - run: flet build ${{ matrix.target-platform }} --output dist
-        env:
-          PYTHONIOENCODING: utf-8
+      - run: |
+            export PYTHONIOENCODING=utf-8
+            flet build ${{ matrix.target-platform }} --output dist
+        # env:
+        #   PYTHONIOENCODING: utf-8
       # - name: "Linux/MacOS compress"
       #   if: runner.os != 'Windows'
       #   run: tar zcvf ${{matrix.binary-name}} dist
