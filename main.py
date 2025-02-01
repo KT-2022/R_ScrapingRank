@@ -1,14 +1,16 @@
 import flet as ft
 import os
-from search_logic import execute_search
+import yaml
 from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
+import traceback
 import random
 import time
 import glob
-from logging_config import configure_logging, close_logging
-from layout import create_layout, add_elements_to_page  # layout.py から関数をインポート
+from src.search_logic import execute_search
+from src.logging_config import configure_logging, close_logging
+from src.layout import create_layout, add_elements_to_page  # layout.py から関数をインポート
 
 logger, log_handler = configure_logging()
 
@@ -34,16 +36,14 @@ def configure_page(page):
     page.theme_mode = ft.ThemeMode.LIGHT
 
 def load_item_ids(file_path):
-    """商品IDをファイルから読み込む関数"""
+    """YAMLファイルから商品IDを読み込む関数"""
     if not os.path.exists(file_path):
         return []
     with open(file_path, 'r', encoding='utf-8') as f:
-        item_ids = []
-        for line in f.read().splitlines():
-            parts = line.split('|')
-            if len(parts) == 3:
-                item_ids.append(parts)
+        data = yaml.safe_load(f)
+        item_ids = [(item['shop_id'], item['item_id'], item['item_name']) for item in data['items']]
     return item_ids
+
 
 def create_gesture_detector(content, item_id):
     return ft.GestureDetector(
@@ -124,7 +124,8 @@ def main(page: ft.Page):
     add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog)
 
     # 商品IDをファイルから読み込む
-    item_ids = load_item_ids('item_ids.txt')
+    item_ids = load_item_ids(os.path.join(os.path.dirname(__file__), 'config', 'item_ids.yaml'))
+
 
     # ページに要素を追加してから、テーブルを更新
     page.update()
@@ -144,14 +145,25 @@ def main(page: ft.Page):
         progress_bar.visible = True
         page.update()
 
-        result = execute_search(keyword, page_number, item_ID, shop_ID)
+        try:
+            result = execute_search(keyword, page_number, item_ID, shop_ID)
+            result_text.value = result
+            result_dialog.open = True
+        except Exception as ex:
+            show_snackbar(page, f"エラーが発生しました: {ex}")
+            
+            # エラーメッセージを詳細に取得
+            error_message = ''.join(traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__))
+            # エラーメッセージをログに記録
+            logger.error(error_message)
+            
+        finally:
+            progress_bar.visible = False
+            search_button.content.disabled = False
+            select_button.content.disabled = False
+            register_button.content.disabled = False
+            page.update()
 
-        progress_bar.visible = False
-        page.update()
-        search_button.content.disabled = False
-        result_text.value = result
-        result_dialog.open = True
-        page.update()
 
     # ダイアログを閉じる
     def close_dialog(e):
@@ -194,19 +206,44 @@ def main(page: ft.Page):
         new_shop_id = register_shop_id.value
         new_item_id = register_item_id.value
         new_item_name = register_item_name.value
-        if new_item_id and new_item_name and new_shop_id:  # すべて値があることを確認
-            with open('item_ids.txt', 'a', encoding='utf-8') as f:
-                f.write(new_shop_id + '|' + new_item_id + '|' + new_item_name + '\n')
-            item_ids.append((new_shop_id, new_item_id, new_item_name))  # メモリ上のリストにも追加
-            register_shop_id.value = ''  # 入力フィールドをクリア
-            register_item_id.value = ''  # 入力フィールドをクリア
-            register_item_name.value = ''  # 入力フィールドをクリア
-            update_table(table, item_ids)  # テーブルを更新
+
+        if new_item_id and new_item_name and new_shop_id:  # すべての値があることを確認
+            file_path = os.path.join(os.path.dirname(__file__), 'config', 'item_ids.yaml')
+
+            # 既存のアイテムIDを読み込む
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+            else:
+                data = {"items": []}
+
+            # 新しいアイテムを追加
+            data['items'].append({
+                'shop_id': new_shop_id,
+                'item_id': new_item_id,
+                'item_name': new_item_name
+            })
+
+            # YAMLファイルに書き込む
+            with open(file_path, 'w', encoding='utf-8') as f:
+                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+
+            # メモリ上のリストにも追加
+            item_ids.append((new_shop_id, new_item_id, new_item_name))
+
+            # 入力フィールドをクリア
+            register_shop_id.value = ''
+            register_item_id.value = ''
+            register_item_name.value = ''
+
+            # テーブルを更新
+            update_table(table, item_ids)
             page.update()
         else:
             print("商品ID、商品名、および店舗IDを入力してください。")  # デバッグメッセージ追加
         register_dialog.open = False
         page.update()
+
 
     # イベントリスナーの設定
     search_button.content.on_click = on_execute
@@ -219,4 +256,3 @@ def main(page: ft.Page):
 if __name__ == "__main__":
     ft.app(target=main)
     close_logging(logger)
-

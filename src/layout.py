@@ -2,8 +2,12 @@
 import flet as ft
 import os
 
-IMAGE_PATH_LEFT = os.path.join(os.path.dirname(__file__), 'assets/image/search_transparent.png')
-IMAGE_PATH_RIGHT = os.path.join(os.path.dirname(__file__), 'assets/image/spreadsheet_transparent.png')
+# 現在のスクリプトファイルのディレクトリを取得
+current_dir = os.path.dirname(__file__)
+
+# プロジェクトルートから見た画像ファイルのパスを設定
+IMAGE_PATH_LEFT = os.path.join(current_dir, '..', 'assets', 'image', 'search_transparent.png')
+IMAGE_PATH_RIGHT = os.path.join(current_dir, '..', 'assets', 'image', 'spreadsheet_transparent.png')
 
 def create_layout(page):
     """レイアウトを作成する関数"""

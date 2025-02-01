@@ -16,14 +16,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-
-# ロギングの設定
-logging.basicConfig(
-    filename='scraping.log',
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s %(message)s',
-    encoding='utf-8'
-)
+from pathlib import Path
 
 # 定数の定義
 RAKUTEN_SEARCH_URL = "https://search.rakuten.co.jp/search/mall/"
@@ -78,10 +71,18 @@ def execute_search(keyword, page_number, search_item_id, shop_id):
 
         time.sleep(0.5)
 
-    output_csv(output_df)
+    filepath = output_csv(output_df)
+    path_parts = Path(filepath).parts
+
+    if len(path_parts) >= 3:
+        last_two_dirs = os.path.join(path_parts[-2], path_parts[-1])
+    else:
+        last_two_dirs = None
+
     result = (
         f'検索ワード: {keyword}\nページ数: {page_number}\n商品ID: {search_item_id}\n店舗ID: {shop_id}\n\n'
-        '上記の条件でスクレイピングが完了しました'
+        '上記の条件でスクレイピングが完了しました\n'
+        f'CSVファイルが {last_two_dirs} に保存されました。'
     )
     return result
 
@@ -206,3 +207,4 @@ def output_csv(output_df):
     filepath = download_folder / filename
     output_df.to_csv(filepath, index=False, encoding='cp932')
     print(f"CSVファイルが {filepath} に保存されました。")
+    return filepath
