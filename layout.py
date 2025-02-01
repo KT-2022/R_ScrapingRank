@@ -1,3 +1,4 @@
+# layout.py
 import flet as ft
 import os
 
@@ -112,8 +113,8 @@ def create_layout(page):
         actions=[ft.TextButton("反映")]
     )
 
-    # 変数のリストを14個に更新
-    return query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table
+    # 必要な変数のリストをすべて返すように更新
+    return query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table, register_item_id, register_item_name
 
 def add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog):
     """ページに要素を追加する関数"""

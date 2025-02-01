@@ -1,4 +1,3 @@
-# main.py
 import flet as ft
 import os
 from search_logic import execute_search
@@ -119,7 +118,7 @@ def main(page: ft.Page):
     configure_page(page)
 
     # レイアウト定義
-    query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table = create_layout(page)
+    query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table, register_item_id, register_item_name = create_layout(page)
 
     # ページに要素を追加
     add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog)
@@ -134,6 +133,8 @@ def main(page: ft.Page):
     # 検索実行時の処理
     def on_execute(e):
         search_button.content.disabled = True
+        select_button.content.disabled = True
+        register_button.content.disabled = True
         page.update()
 
         keyword = query_input.value
@@ -189,18 +190,21 @@ def main(page: ft.Page):
 
     # 新しい商品IDと商品名を登録する処理
     def on_register_new_item(e):
+        print("on_register_new_item called")  # デバッグメッセージ追加
         new_shop_id = register_shop_id.value
         new_item_id = register_item_id.value
         new_item_name = register_item_name.value
         if new_item_id and new_item_name and new_shop_id:  # すべて値があることを確認
             with open('item_ids.txt', 'a', encoding='utf-8') as f:
-                f.write(new_shop_id + '|' +  new_item_id + '|' + new_item_name  +'\n')
+                f.write(new_shop_id + '|' + new_item_id + '|' + new_item_name + '\n')
             item_ids.append((new_shop_id, new_item_id, new_item_name))  # メモリ上のリストにも追加
             register_shop_id.value = ''  # 入力フィールドをクリア
             register_item_id.value = ''  # 入力フィールドをクリア
             register_item_name.value = ''  # 入力フィールドをクリア
             update_table(table, item_ids)  # テーブルを更新
             page.update()
+        else:
+            print("商品ID、商品名、および店舗IDを入力してください。")  # デバッグメッセージ追加
         register_dialog.open = False
         page.update()
 
@@ -210,10 +214,9 @@ def main(page: ft.Page):
     register_button.content.on_click = on_register
     result_dialog.actions[0].on_click = close_dialog
     selection_dialog.actions[0].on_click = on_reflect
-    register_dialog.actions[0].on_click = on_register_new_item
+    register_dialog.actions[0].on_click = on_register_new_item  # イベントリスナーを設定
 
 if __name__ == "__main__":
     ft.app(target=main)
-
-    # プログラム終了時にログハンドラを閉じる
     close_logging(logger)
+

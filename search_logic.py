@@ -33,6 +33,10 @@ COLUMNS = ['ランキング', '検索商品IDフラグ', '商品URL', '商品名
 def execute_search(keyword, page_number, search_item_id, shop_id):
     """検索実行関数"""
     logging.info('execute_searchに入りました')
+    logging.info(f'キーワード{keyword}')
+    logging.info(f'ページナンバー{page_number}')
+    logging.info(f'検索ID{search_item_id}')
+    logging.info(f'ショップID{shop_id}')
 
     output_df = pd.DataFrame(columns=COLUMNS)
     rank_count = 1
@@ -47,11 +51,18 @@ def execute_search(keyword, page_number, search_item_id, shop_id):
     for i in range(page_number):
         logging.info(f'for文に入りました{i + 1}回目')
         url = create_search_url(keyword, i + 1)
+        logging.info(f'検索URL{url}')
         product_cards, product_count = fetch_product_cards(url)
+        if product_cards :
+            logging.info('fetch_product_cards後のproduct_cardsあり')
+        else :
+            logging.info('fetch_product_cards後のproduct_cardsなし')
+        logging.info(f'商品カウント{product_count}')
 
         total_product_count += product_count
 
         for product_card in product_cards:
+            logging.info(f'product_card{product_card}')
             if not check_pr_in_title(product_card):
                 shop_info_dict = extract_shop_info(product_card)
                 # logging.info(f'shop_info_dict: {shop_info_dict}')
@@ -115,16 +126,34 @@ def fetch_product_cards(url):
         
         # ページのHTMLを取得
         page_source = driver.page_source
-        search_html = BeautifulSoup(page_source, "html.parser")
+        if page_source :
+            logging.info('page_sourceあり')
+        else :
+            logging.info('page_sourceなし')
         
-        # HTMLを保存してデバッグ
-        with open('debug_page_source.html', 'w', encoding='utf-8') as f:
-            f.write(page_source)
+        search_html = BeautifulSoup(page_source, "html.parser")
+        if search_html :
+            logging.info('search_htmlあり')
+        else :
+            logging.info('search_htmlなし')
+        
+        # HTMLを保存してデバッグ（デバッグの時に解除）
+        # with open('debug_page_source.html', 'w', encoding='utf-8') as f:
+        #     f.write(page_source)
         
         # 商品カードを取得
         product_cards = search_html.find_all(
+            class_="dui-card searchresultitem overlay-control-wrapper--3KBO0 title-control-wrapper--1rzvX"
+        )
+        if not product_cards :
+            product_cards = search_html.find_all(
             class_="dui-card searchresultitem overlay-control-wrapper--2W6PV title-control-wrapper--1YBX9"
         )
+
+        if product_cards :
+            logging.info('product_cardsあり')
+        else :
+            logging.info('product_cardsなし')
         
         driver.quit()
         
@@ -135,20 +164,37 @@ def fetch_product_cards(url):
 
 def check_pr_in_title(product_card):
     """PR判定メソッド"""
-    title_element = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
-        'a', class_='title-link--3Ho6z'
+    title_element = product_card.find('div', class_='title--2KRhr title-grid--18AUw').find(
+        'a', class_='title-link--3Yuev'
     )
+    # title_element = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
+    #     'a', class_='title-link--3Ho6z'
+    # )
     logging.info(f"リンクテキストの内容: {title_element}")
-    return '[PR]' in title_element.get_text() if title_element else False
+    logging.info(f"リンクテキストのタイトル: {title_element.get_text()}")
+    if title_element is not None:
+        return '[PR]' in title_element.get_text()
+    else:
+        return False
+
 
 def extract_shop_info(product_card):
     """product_cardからショップURL、ショップ名、商品IDを取得するメソッド"""
-    shop_url_decode = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
-        'a', class_='title-link--3Ho6z')['href']
-    shop_name = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
-        'a', class_='title-link--3Ho6z').text
+    # shop_url_decode = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
+    #     'a', class_='title-link--3Ho6z')['href']
+    # shop_name = product_card.find('div', class_='title--I67Sk title--zfJkV title-grid--XKKDL').find(
+    #     'a', class_='title-link--3Ho6z').text
+    # item_id_pattern_match = ITEM_ID_PATTERN.search(shop_url_decode)
+    # item_id = item_id_pattern_match.group(1) if item_id_pattern_match else None
+
+    shop_url_decode = product_card.find('div', class_='title--2KRhr title-grid--18AUw').find(
+        'a', class_='title-link--3Yuev')['href']
+    shop_name = product_card.find('div', class_='title--2KRhr title-grid--18AUw').find(
+        'a', class_='title-link--3Yuev').text
     item_id_pattern_match = ITEM_ID_PATTERN.search(shop_url_decode)
     item_id = item_id_pattern_match.group(1) if item_id_pattern_match else None
+    
+
     return {'url': shop_url_decode, 'name': shop_name, 'item_id': item_id}
 
 def output_csv(output_df):
