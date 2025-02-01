@@ -1,19 +1,4 @@
 items:
-- item_id: '10000757'
-  item_name: 他社あんず
-  shop_id: fs-yokohama
-- item_id: '10000008'
-  item_name: 100g セミドライあんず
-  shop_id: anzushop
 - item_id: test
   item_name: テスト
-  shop_id: anzushop
-- item_id: fhfshfgsgfsg
-  item_name: gfsdgsdgfdgsg
-  shop_id: trt
-- item_id: fdasfdsagh
-  item_name: gaggdsag
-  shop_id: '1234'
-- item_id: マジで
-  item_name: なんなん
-  shop_id: yamlテスト
+  shop_id: テストshop
