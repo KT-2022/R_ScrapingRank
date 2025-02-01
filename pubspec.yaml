@@ -1,0 +1,14 @@
+name: r_scrapingrank
+description: A new Flet application.
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flet: ^0.22.0  # 最新バージョンを確認してください
+
+flutter:
+  assets:
+    - assets/icons/app_icon.png  # アイコンファイルのパス
