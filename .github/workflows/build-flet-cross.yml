@@ -42,11 +42,11 @@ jobs:
           channel: 'stable'
       - run: pip install -r requirements.txt
       - run: |
+        chcp 65001
         flet build ${{ matrix.target-platform }} --output dist
       env:
         PYTHONIOENCODING: utf-8
         PYTHONLEGACYWINDOWSSTDIO: 'true'
-
       # - name: "Linux/MacOS compress"
       #   if: runner.os != 'Windows'
       #   run: tar zcvf ${{matrix.binary-name}} dist
