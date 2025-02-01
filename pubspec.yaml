@@ -12,4 +12,3 @@ dependencies:
 flutter:
   assets:
     - assets/icons/app_icon.png  # アイコンファイルのパス
-    
