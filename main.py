@@ -5,12 +5,9 @@ from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 import traceback
-import random
-import time
-import glob
 from src.search_logic import execute_search
 from src.logging_config import configure_logging, close_logging
-from src.layout import create_layout, add_elements_to_page  # layout.py から関数をインポート
+from src.layout import create_layout, add_elements_to_page
 
 logger, log_handler = configure_logging()
 
@@ -156,7 +153,7 @@ def main(page: ft.Page):
             error_message = ''.join(traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__))
             # エラーメッセージをログに記録
             logger.error(error_message)
-            
+
         finally:
             progress_bar.visible = False
             search_button.content.disabled = False

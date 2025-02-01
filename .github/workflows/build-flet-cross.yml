@@ -1,0 +1,56 @@
+name: build-flet-cross
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Create Release"
+        run: gh release create ${{github.head_ref}} --draft --verify-tag --notes "Release ${{github.head_ref}}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  cross-build:
+    needs: create-release
+    strategy:
+      matrix:
+        include:
+          - runs-on: macos-latest
+            binary-name: ${{ vars.APP_NAME }}_macos.tar.gz
+            target-platform: macos
+          - runs-on: windows-latest
+            binary-name: ${{ vars.APP_NAME }}_windows.zip
+            target-platform: windows
+    runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: pip install -r requirements.txt
+      - name: "Install GStreamer libraries"
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libunwind-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
+      - run: flet build ${{ matrix.target-platform }} --output dist
+      - name: "Linux/MacOS compress"
+        if: runner.os != 'Windows'
+        run: tar zcvf ${{matrix.binary-name}} dist
+      - name: "Windows compress"
+        if: runner.os == 'Windows'
+        run: powershell Compress-Archive -Path dist -DestinationPath ${{matrix.binary-name}}
+      - name: "Upload Release"
+        run: gh release upload ${{github.head_ref}} ${{matrix.binary-name}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

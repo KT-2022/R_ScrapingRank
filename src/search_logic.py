@@ -2,7 +2,6 @@ import time
 import re
 from urllib.parse import urljoin, quote
 from bs4 import BeautifulSoup
-import requests
 from requests.exceptions import RequestException, ConnectionError, HTTPError, Timeout
 import logging
 import pandas as pd

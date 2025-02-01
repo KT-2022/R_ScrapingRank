@@ -1,4 +1,3 @@
-# layout.py
 import flet as ft
 import os
 
