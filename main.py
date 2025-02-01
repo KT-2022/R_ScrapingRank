@@ -2,7 +2,6 @@ import flet as ft
 import os
 import yaml
 from datetime import datetime
-import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from src.search_logic import execute_search
