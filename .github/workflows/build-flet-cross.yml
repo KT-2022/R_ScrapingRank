@@ -1,8 +1,8 @@
 name: build-flet-cross
 on:
-  pull_request:
-    branches:
-      - main
+  push:
+    tags:
+      - "v*"
 
 jobs:
   create-release:
@@ -12,15 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Create Release"
-        run: gh release create ${{github.head_ref}} --draft --notes "Release ${{github.head_ref}}"
+        run: gh release create ${{github.ref_name}} --draft --verify-tag --notes "Release ${{github.ref_name}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   cross-build:
     needs: create-release
     strategy:
       matrix:
         include:
+          # - runs-on: ubuntu-latest
+          #   binary-name: ${{ vars.APP_NAME }}_linux.tar.gz
+          #   target-platform: linux
           - runs-on: macos-latest
             binary-name: ${{ vars.APP_NAME }}_macos.tar.gz
             target-platform: macos
@@ -34,18 +36,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10' 
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: "Clean Flutter Project"
-        run: |
-          cd ${{ github.workspace }}  # プロジェクトのルートディレクトリに移動
-          flutter clean
-      - name: "Install Dependencies"
-        run: |
-          cd ${{ github.workspace }}  # プロジェクトのルートディレクトリに移動
-          flutter pub get
       - run: pip install -r requirements.txt
       - name: "Install GStreamer libraries"
         if: runner.os == 'Linux'
@@ -60,6 +54,6 @@ jobs:
         if: runner.os == 'Windows'
         run: powershell Compress-Archive -Path dist -DestinationPath ${{matrix.binary-name}}
       - name: "Upload Release"
-        run: gh release upload ${{github.head_ref}} ${{matrix.binary-name}}
+        run: gh release upload ${{github.ref_name}} ${{matrix.binary-name}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
