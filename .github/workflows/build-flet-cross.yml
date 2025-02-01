@@ -15,6 +15,7 @@ jobs:
         run: gh release create ${{github.head_ref}} --draft --notes "Release ${{github.head_ref}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   cross-build:
     needs: create-release
     strategy:
@@ -37,8 +38,14 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter clean
-      - run: flutter pub get
+      - name: "Clean Flutter Project"
+        run: |
+          cd path/to/flutter/project/root  # プロジェクトのルートディレクトリに移動
+          flutter clean
+      - name: "Install Dependencies"
+        run: |
+          cd path/to/flutter/project/root  # プロジェクトのルートディレクトリに移動
+          flutter pub get
       - run: pip install -r requirements.txt
       - name: "Install GStreamer libraries"
         if: runner.os == 'Linux'
