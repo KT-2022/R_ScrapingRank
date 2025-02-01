@@ -1,1 +1,7 @@
 flet==0.22.*
+beautifulsoup4
+requests
+pandas
+selenium
+webdriver-manager
+PyYAML
