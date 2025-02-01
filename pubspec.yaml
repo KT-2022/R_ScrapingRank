@@ -2,7 +2,7 @@ name: r_scrapingrank
 description: A new Flet application.
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"  # Flutterバージョンに対応するDart SDKバージョン
+  sdk: ">=3.2.0 <4.0.0"  # Dart SDKバージョンを3.2.0以降に変更
 
 dependencies:
   flutter:

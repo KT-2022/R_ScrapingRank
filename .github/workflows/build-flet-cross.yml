@@ -18,6 +18,7 @@ jobs:
 
   cross-build:
     needs: create-release
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -27,7 +28,6 @@ jobs:
           - runs-on: windows-latest
             binary-name: ${{ vars.APP_NAME }}_windows.zip
             target-platform: windows
-    runs-on: ${{ matrix.runs-on }}
     permissions:
       contents: write
     steps:
@@ -39,10 +39,7 @@ jobs:
           sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
           sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
           sudo apt-get update
-          sudo apt-get install dart
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+          sudo apt-get install -y dart
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.10.0'  # 特定のバージョンに固定
@@ -53,6 +50,9 @@ jobs:
         run: flutter pub upgrade
       - name: "Install Dependencies"
         run: flutter pub get
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - run: pip install -r requirements.txt
       - name: "Install GStreamer libraries"
         if: runner.os == 'Linux'
