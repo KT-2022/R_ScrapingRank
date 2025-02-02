@@ -42,8 +42,7 @@ jobs:
           channel: 'stable'
       - run: pip install -r requirements.txt
       - run: pip install --upgrade flet
-      - run: pip list --outdated
-      - run: pip install --upgrade $(pip list --outdated | grep -oP '^\S+')
+      - run: pip install --upgrade beautifulsoup4 requests pandas selenium webdriver-manager PyYAML
       - run: |
           chcp 65001
           powershell -Command "& {flet build ${{ matrix.target-platform }} --output dist}"
