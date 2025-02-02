@@ -41,6 +41,8 @@ jobs:
         with:
           channel: 'stable'
       - run: pip install -r requirements.txt
+      - run: flutter pub upgrade flet
+      - run: flutter pub upgrade
       - run: |
           chcp 65001
           powershell -Command "& {flet build ${{ matrix.target-platform }} --output dist}"
@@ -50,8 +52,6 @@ jobs:
       - name: "Windows compress"
         if: runner.os == 'Windows'
         run: powershell Compress-Archive -Path dist -DestinationPath ${{matrix.binary-name}}
-      - name: "Show Build Log"
-        run: cat build_log.txt
       - name: "Upload Release"
         run: gh release upload ${{github.ref_name}} ${{matrix.binary-name}}
         env:
