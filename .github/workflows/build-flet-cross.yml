@@ -41,8 +41,9 @@ jobs:
         with:
           channel: 'stable'
       - run: pip install -r requirements.txt
-      - run: flutter pub upgrade flet
-      - run: flutter pub upgrade
+      - run: pip install --upgrade flet
+      - run: pip list --outdated
+      - run: pip install --upgrade $(pip list --outdated | grep -oP '^\S+')
       - run: |
           chcp 65001
           powershell -Command "& {flet build ${{ matrix.target-platform }} --output dist}"
