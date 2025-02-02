@@ -41,8 +41,12 @@ jobs:
         with:
           channel: 'stable'
       - run: pip install -r requirements.txt
-      - run: flutter pub upgrade flet
-      - run: flutter pub upgrade
+      - run: |
+          cd path/to/your/project # プロジェクトのルートディレクトリに移動
+          flutter pub upgrade flet
+      - run: |
+          cd path/to/your/project # プロジェクトのルートディレクトリに移動
+          flutter pub upgrade
       - run: |
           chcp 65001
           powershell -Command "& {flet build ${{ matrix.target-platform }} --output dist}"
