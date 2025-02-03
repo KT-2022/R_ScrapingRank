@@ -41,7 +41,8 @@ jobs:
           python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
-      - run: flet pack main.py --name ${{ matrix.flet-name }}
+      - run: |
+          pyinstaller R_ScrapingRank.spec
       - name: "Linux/MacOS compress"
         if: runner.os != 'Windows'
         run: tar zcvf ${{matrix.binary-name}} dist
