@@ -1,4 +1,4 @@
-flet==0.22.*
+flet
 beautifulsoup4
 requests
 pandas
