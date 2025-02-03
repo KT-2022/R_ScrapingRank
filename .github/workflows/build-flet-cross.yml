@@ -42,6 +42,7 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
       - run: |
+          touch logs/scraping.log  # 空のファイルを生成
           pyinstaller R_ScrapingRank.spec
       - name: "Linux/MacOS compress"
         if: runner.os != 'Windows'
