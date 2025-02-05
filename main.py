@@ -75,7 +75,6 @@ def update_table(table, item_ids, selected_index=None):
         )
         table.rows.append(row)
         print(f"Created row: {row}")  # デバッグ用出力
-
     table.update()
 
 def on_row_selected(item_id):
