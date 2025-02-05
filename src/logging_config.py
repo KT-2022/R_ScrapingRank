@@ -29,10 +29,10 @@ class SimpleRotatingFileHandler(logging.Handler):
 def configure_logging():
     logs_dir = os.path.join(os.path.dirname(__file__), '..', 'assets/logs')
     os.makedirs(logs_dir, exist_ok=True)
-    log_file_path = os.path.join(logs_dir, 'scraping.log')
+    log_file_path = os.path.join(logs_dir, 'scrapinglog.txt')
 
     log_handler = RotatingFileHandler(
-        log_file_path,  # ../assets/logs/scraping.log に保存
+        log_file_path,  # ../assets/logs/scrapinglog.txt に保存
         maxBytes=100 * 1024 * 1024,  # 100MB
         backupCount=5,  # 古いログファイルのバックアップを5つまで保持
         encoding='utf-8'
