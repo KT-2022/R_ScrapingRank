@@ -1,1 +1,4 @@
-items: []
+items:
+- item_id: t1008
+  item_name: テスト
+  shop_id: testSHOP
