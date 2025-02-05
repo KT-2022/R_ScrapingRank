@@ -120,8 +120,7 @@ def main(page: ft.Page):
     add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog)
 
     # 商品IDをファイルから読み込む
-    item_ids = load_item_ids(os.path.join(os.path.dirname(__file__), 'config', 'item_ids.yaml'))
-
+    item_ids = load_item_ids(os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml'))
 
     # ページに要素を追加してから、テーブルを更新
     page.update()
@@ -204,7 +203,7 @@ def main(page: ft.Page):
         new_item_name = register_item_name.value
 
         if new_item_id and new_item_name and new_shop_id:  # すべての値があることを確認
-            file_path = os.path.join(os.path.dirname(__file__), 'config', 'item_ids.yaml')
+            file_path = os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml')
 
             # 既存のアイテムIDを読み込む
             if os.path.exists(file_path):
