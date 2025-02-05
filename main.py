@@ -37,9 +37,10 @@ def load_item_ids(file_path):
         return []
     with open(file_path, 'r', encoding='utf-8') as f:
         data = yaml.safe_load(f)
-        item_ids = [(item['shop_id'], item['item_id'], item['item_name']) for item in data['items']]
+    if data is None or 'items' not in data:
+        return []  # データがない場合は空のリストを返す
+    item_ids = [(item['shop_id'], item['item_id'], item['item_name']) for item in data['items']]
     return item_ids
-
 
 def create_gesture_detector(content, item_id):
     return ft.GestureDetector(
@@ -208,9 +209,12 @@ def main(page: ft.Page):
             # 既存のアイテムIDを読み込む
             if os.path.exists(file_path):
                 with open(file_path, 'r', encoding='utf-8') as f:
-                    data = yaml.safe_load(f)
+                    data = yaml.safe_load(f) or {}  # dataがNoneの場合は空の辞書を割り当てる
             else:
                 data = {"items": []}
+
+            if 'items' not in data:
+                data['items'] = []
 
             # 新しいアイテムを追加
             data['items'].append({
@@ -238,6 +242,7 @@ def main(page: ft.Page):
             print("商品ID、商品名、および店舗IDを入力してください。")  # デバッグメッセージ追加
         register_dialog.open = False
         page.update()
+
 
 
     # イベントリスナーの設定

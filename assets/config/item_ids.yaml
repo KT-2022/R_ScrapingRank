@@ -1,7 +1,7 @@
 items:
 - item_id: test
-  item_name: テスト
-  shop_id: テストshop
+  item_name: test
+  shop_id: test
 - item_id: test2
-  item_name: テスト2
-  shop_id: テストshop
+  item_name: test2
+  shop_id: test2
