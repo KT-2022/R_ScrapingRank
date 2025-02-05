@@ -1,7 +1,1 @@
-items:
-- item_id: test
-  item_name: test
-  shop_id: test
-- item_id: test2
-  item_name: test2
-  shop_id: test2
+items: []

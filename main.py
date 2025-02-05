@@ -12,7 +12,7 @@ logger, log_handler = configure_logging()
 
 def show_snackbar(page, message):
     snackbar = ft.SnackBar(
-        content=ft.Text(message, color=ft.colors.WHITE, text_align = ft.TextAlign.CENTER),
+        content=ft.Text(message, color=ft.colors.WHITE, text_align=ft.TextAlign.CENTER),
         duration=3000,  # 表示時間（ミリ秒単位）
         bgcolor=ft.colors.BLACK54,
         behavior=ft.SnackBarBehavior.FLOATING  # スナックバーを浮動させる
@@ -56,7 +56,7 @@ def update_table(table, item_ids, selected_index=None):
         print(f"Adding row with shop_id: {shop_id}, item_id: {item_id}, item_name: {item_name}")  # デバッグ用出力
         selected = index == selected_index
         row = ft.DataRow(
-            cells=            [
+            cells=[
                 ft.DataCell(content=ft.GestureDetector(
                     content=ft.Text(shop_id),
                     on_tap=lambda e, index=index, shop_id=shop_id, item_id=item_id: on_row_selected_by_index(index, shop_id, item_id)
@@ -160,7 +160,6 @@ def main(page: ft.Page):
             register_button.content.disabled = False
             page.update()
 
-
     # ダイアログを閉じる
     def close_dialog(e):
         result_dialog.open = False
@@ -191,12 +190,29 @@ def main(page: ft.Page):
         selection_dialog.open = False
         page.update()
 
-    # 商品IDをファイルに登録する処理
-    def on_register(e):
-        register_dialog.open = True
-        page.update()
+    # 商品を削除する処理
+    def on_delete_item(e):
+        global selected_item_id, selected_shop_id, item_ids
+        if selected_item_id:
+            # item_idsリストから選択された商品を削除
+            item_ids = [item for item in item_ids if item[1] != selected_item_id]
+            
+            # YAMLファイルから削除
+            file_path = os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml')
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f) or {"items": []}
+                data['items'] = [item for item in data['items'] if item['item_id'] != selected_item_id]
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+            
+            # テーブルを更新
+            update_table(table, item_ids)
+            page.update()
+        else:
+            print("削除する商品を選択してください")
 
-    # 新しい商品IDと商品名を登録する処理
+    # 商品IDをファイルに登録する処理
     def on_register_new_item(e):
         print("on_register_new_item called")  # デバッグメッセージ追加
         new_shop_id = register_shop_id.value
@@ -241,16 +257,21 @@ def main(page: ft.Page):
         else:
             print("商品ID、商品名、および店舗IDを入力してください。")  # デバッグメッセージ追加
         register_dialog.open = False
+        show_snackbar(page, f"商品名： {new_item_name} が登録されました")
         page.update()
 
-
+    # 商品IDを登録する処理
+    def on_register(e):
+        register_dialog.open = True
+        page.update()
 
     # イベントリスナーの設定
     search_button.content.on_click = on_execute
     select_button.content.on_click = on_select
     register_button.content.on_click = on_register
     result_dialog.actions[0].on_click = close_dialog
-    selection_dialog.actions[0].on_click = on_reflect
+    selection_dialog.actions[0].on_click = on_delete_item
+    selection_dialog.actions[1].on_click = on_reflect
     register_dialog.actions[0].on_click = on_register_new_item  # イベントリスナーを設定
 
 if __name__ == "__main__":

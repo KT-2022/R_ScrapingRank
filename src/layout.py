@@ -73,11 +73,11 @@ def create_layout(page):
     table = ft.DataTable(
         data_row_color={
             ft.ControlState.SELECTED: ft.colors.INDIGO_100,
-            },
+        },
         columns=[
-        ft.DataColumn(label=ft.Text("店舗ID")),
-        ft.DataColumn(label=ft.Text("商品ID")),
-        ft.DataColumn(label=ft.Text("商品名"))
+            ft.DataColumn(label=ft.Text("店舗ID")),
+            ft.DataColumn(label=ft.Text("商品ID")),
+            ft.DataColumn(label=ft.Text("商品名"))
         ],
         rows=[]
     )
@@ -113,7 +113,7 @@ def create_layout(page):
             height=400,
             width=400  # 横スクロールを考慮して幅を広めに設定
         ),
-        actions=[ft.TextButton("反映")]
+        actions=[ft.TextButton("削除") , ft.TextButton("反映")]  # 削除ボタンを追加
     )
 
     # 必要な変数のリストをすべて返すように更新
@@ -144,7 +144,7 @@ def add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, 
     )
 
     button_container = ft.Container(
-        content = ft.Row(
+        content=ft.Row(
             [select_button, register_button],
             alignment=ft.MainAxisAlignment.CENTER,  # 左揃え
             spacing=5
