@@ -27,12 +27,12 @@ class SimpleRotatingFileHandler(logging.Handler):
         self._open_file()  # ファイルを上書きモードで開き直す
 
 def configure_logging():
-    logs_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+    logs_dir = os.path.join(os.path.dirname(__file__), '..', 'assets/logs')
     os.makedirs(logs_dir, exist_ok=True)
     log_file_path = os.path.join(logs_dir, 'scraping.log')
 
     log_handler = RotatingFileHandler(
-        log_file_path,  # logs/scraping.log に保存
+        log_file_path,  # ../assets/logs/scraping.log に保存
         maxBytes=100 * 1024 * 1024,  # 100MB
         backupCount=5,  # 古いログファイルのバックアップを5つまで保持
         encoding='utf-8'

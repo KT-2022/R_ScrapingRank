@@ -6,3 +6,4 @@ selenium
 webdriver-manager
 PyYAML
 PyInstaller
+pillow
