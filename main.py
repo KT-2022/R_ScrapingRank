@@ -1,12 +1,11 @@
 import flet as ft
-import os
-import yaml
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 import traceback
 from src.search_logic import execute_search
 from src.logging_config import configure_logging, close_logging
 from src.layout import create_layout, add_elements_to_page
+from src.db_operations import create_db, add_item_to_db, load_item_ids, delete_item_from_db
 
 logger, log_handler = configure_logging()
 
@@ -30,17 +29,6 @@ def configure_page(page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.theme = ft.Theme(color_scheme_seed=ft.colors.BLUE)
     page.theme_mode = ft.ThemeMode.LIGHT
-
-def load_item_ids(file_path):
-    """YAMLファイルから商品IDを読み込む関数"""
-    if not os.path.exists(file_path):
-        return []
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = yaml.safe_load(f)
-    if data is None or 'items' not in data:
-        return []  # データがない場合は空のリストを返す
-    item_ids = [(item['shop_id'], item['item_id'], item['item_name']) for item in data['items']]
-    return item_ids
 
 def create_gesture_detector(content, item_id):
     return ft.GestureDetector(
@@ -110,6 +98,8 @@ def on_row_selected_by_index(index, shop_id, item_id):
 def main(page: ft.Page):
     global item_ids, table, selection_dialog, register_dialog, register_item_id, register_item_name, register_shop_id, itemID
 
+    create_db()  # データベースを作成
+
     # 画面設定
     configure_page(page)
 
@@ -119,8 +109,8 @@ def main(page: ft.Page):
     # ページに要素を追加
     add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog)
 
-    # 商品IDをファイルから読み込む
-    item_ids = load_item_ids(os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml'))
+    # 商品IDをデータベースから読み込む
+    item_ids = load_item_ids()
 
     # ページに要素を追加してから、テーブルを更新
     page.update()
@@ -192,26 +182,28 @@ def main(page: ft.Page):
     # 商品を削除する処理
     def on_delete_item(e):
         global selected_item_id, selected_shop_id, item_ids
-        if selected_item_id:
+        if selected_item_id and selected_shop_id:
             # item_idsリストから選択された商品を削除
-            item_ids = [item for item in item_ids if item[1] != selected_item_id]
-            
-            # YAMLファイルから削除
-            file_path = os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml')
-            if os.path.exists(file_path):
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = yaml.safe_load(f) or {"items": []}
-                data['items'] = [item for item in data['items'] if item['item_id'] != selected_item_id]
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+            item_ids = [item for item in item_ids if not (item[0] == selected_shop_id and item[1] == selected_item_id)]
+
+            # データベースから削除
+            delete_item_from_db(selected_shop_id, selected_item_id)
             
             # テーブルを更新
             update_table(table, item_ids)
             page.update()
+
+            # 商品IDをデータベースから読み込む
+            item_ids = load_item_ids()
+            print(f"item_ids{item_ids}")
+            if not item_ids:
+                selection_dialog.open = False
+                page.update()
+
         else:
             print("削除する商品を選択してください")
 
-    # 商品IDをファイルに登録する処理
+    # 商品IDを登録する処理
     def on_register_new_item(e):
         print("on_register_new_item called")  # デバッグメッセージ追加
         new_shop_id = register_shop_id.value
@@ -219,28 +211,8 @@ def main(page: ft.Page):
         new_item_name = register_item_name.value
 
         if new_item_id and new_item_name and new_shop_id:  # すべての値があることを確認
-            file_path = os.path.join(os.path.dirname(__file__), 'assets/config', 'item_ids.yaml')
-
-            # 既存のアイテムIDを読み込む
-            if os.path.exists(file_path):
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = yaml.safe_load(f) or {}  # dataがNoneの場合は空の辞書を割り当てる
-            else:
-                data = {"items": []}
-
-            if 'items' not in data:
-                data['items'] = []
-
-            # 新しいアイテムを追加
-            data['items'].append({
-                'shop_id': new_shop_id,
-                'item_id': new_item_id,
-                'item_name': new_item_name
-            })
-
-            # YAMLファイルに書き込む
-            with open(file_path, 'w', encoding='utf-8') as f:
-                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+            # データベースに登録
+            add_item_to_db(new_shop_id, new_item_id, new_item_name)
 
             # メモリ上のリストにも追加
             item_ids.append((new_shop_id, new_item_id, new_item_name))
