@@ -1,6 +1,4 @@
 import flet as ft
-from datetime import datetime
-from logging.handlers import RotatingFileHandler
 import traceback
 from src.search_logic import execute_search
 from src.logging_config import configure_logging, close_logging
@@ -30,10 +28,10 @@ def configure_page(page):
     page.theme = ft.Theme(color_scheme_seed=ft.colors.BLUE)
     page.theme_mode = ft.ThemeMode.LIGHT
 
-def create_gesture_detector(content, item_id):
+def create_gesture_detector(content, index, shop_id, item_id):
     return ft.GestureDetector(
         content=content,
-        on_tap=lambda e: on_row_selected(item_id)
+        on_tap=lambda e: on_row_selected_by_index(index, shop_id, item_id)
     )
 
 def update_table(table, item_ids, selected_index=None):
@@ -45,18 +43,9 @@ def update_table(table, item_ids, selected_index=None):
         selected = index == selected_index
         row = ft.DataRow(
             cells=[
-                ft.DataCell(content=ft.GestureDetector(
-                    content=ft.Text(shop_id),
-                    on_tap=lambda e, index=index, shop_id=shop_id, item_id=item_id: on_row_selected_by_index(index, shop_id, item_id)
-                )),
-                ft.DataCell(content=ft.GestureDetector(
-                    content=ft.Text(item_id),
-                    on_tap=lambda e, index=index, shop_id=shop_id, item_id=item_id: on_row_selected_by_index(index, shop_id, item_id)
-                )),
-                ft.DataCell(content=ft.GestureDetector(
-                    content=ft.Text(item_name),
-                    on_tap=lambda e, index=index, shop_id=shop_id, item_id=item_id: on_row_selected_by_index(index, shop_id, item_id)
-                ))
+                ft.DataCell(content=create_gesture_detector(ft.Text(shop_id), index, shop_id, item_id)),
+                ft.DataCell(content=create_gesture_detector(ft.Text(item_id), index, shop_id, item_id)),
+                ft.DataCell(content=create_gesture_detector(ft.Text(item_name), index, shop_id, item_id))
             ],
             selected=selected,
             on_select_changed=lambda e, index=index, shop_id=shop_id, item_id=item_id: on_row_selected_by_index(index, shop_id, item_id)  # 修正
@@ -64,24 +53,6 @@ def update_table(table, item_ids, selected_index=None):
         table.rows.append(row)
         print(f"Created row: {row}")  # デバッグ用出力
     table.update()
-
-def on_row_selected(item_id):
-    """行が選択されたときの処理"""
-    global selected_row_index, selected_item_id
-
-    selected_row_index = -1
-    selected_item_id = item_id  # 選択された商品IDを保持
-    for index, row in enumerate(table.rows):
-        print(f"Checking row index: {index}, with item_id: {row.cells[0].content.content.value}, row: {row}")  # デバッグ用出力
-        if row.cells[0].content.content.value == item_id:
-            selected_row_index = index
-            break
-
-    if selected_row_index != -1:
-        print(f"Selected row found at index {selected_row_index}: {table.rows[selected_row_index]}")
-        update_table(table, item_ids, selected_row_index)  # 選択された行のインデックスを渡してテーブルを再生成
-    else:
-        print("選択された行が見つかりませんでした")
 
 def on_row_selected_by_index(index, shop_id, item_id):
     """行が選択されたときの処理（インデックスベース）"""
@@ -193,13 +164,11 @@ def main(page: ft.Page):
             update_table(table, item_ids)
             page.update()
 
-            # 商品IDをデータベースから読み込む
+            # テーブルを検索
             item_ids = load_item_ids()
-            print(f"item_ids{item_ids}")
             if not item_ids:
                 selection_dialog.open = False
                 page.update()
-
         else:
             print("削除する商品を選択してください")
 
@@ -243,7 +212,7 @@ def main(page: ft.Page):
     result_dialog.actions[0].on_click = close_dialog
     selection_dialog.actions[0].on_click = on_delete_item
     selection_dialog.actions[1].on_click = on_reflect
-    register_dialog.actions[0].on_click = on_register_new_item  # イベントリスナーを設定
+    register_dialog.actions[0].on_click = on_register_new_item
 
 if __name__ == "__main__":
     ft.app(target=main)
