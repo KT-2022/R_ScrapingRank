@@ -47,10 +47,11 @@ jobs:
       - name: "Build Flet App"
         run: |
           if [ "${{ matrix.runs-on }}" == "windows-latest" ]; then
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" --onedir
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "db/items.db:db/items.db" --onedir
           else
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}"
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "db/items.db:db/items.db"
           fi
+        shell: bash
       - name: "Linux/MacOS compress"
         if: runner.os != 'Windows'
         run: tar zcvf ${{matrix.binary-name}} dist
