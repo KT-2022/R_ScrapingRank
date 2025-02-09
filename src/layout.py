@@ -5,8 +5,8 @@ import os
 current_dir = os.path.dirname(__file__)
 
 # プロジェクトルートから見た画像ファイルのパスを設定
-IMAGE_PATH_LEFT = os.path.join(current_dir, '..', 'assets', 'image', 'search_transparent.png')
-IMAGE_PATH_RIGHT = os.path.join(current_dir, '..', 'assets', 'image', 'spreadsheet_transparent.png')
+IMAGE_PATH_LEFT = os.path.join(current_dir, '..', 'assets_binary', 'image', 'search_transparent.png')
+IMAGE_PATH_RIGHT = os.path.join(current_dir, '..', 'assets_binary', 'image', 'spreadsheet_transparent.png')
 
 def create_layout(page):
     """レイアウトを作成する関数"""

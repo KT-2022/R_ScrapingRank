@@ -1,0 +1,16 @@
+2025-02-09 13:55:14,874 INFO Logger is configured with simple rotating file handler.
+2025-02-09 13:55:14,874 INFO Assets path configured: C:\Users\K.T\Documents\Github\R_ScrapingRank\assets
+2025-02-09 13:55:14,874 INFO Starting up TCP server on localhost:62686
+2025-02-09 13:55:14,880 INFO Flet app has started...
+2025-02-09 13:55:14,880 INFO App URL: tcp://localhost:62686
+2025-02-09 13:55:14,880 INFO Starting Flet View app...
+2025-02-09 13:55:14,880 INFO Flet View found in: C:\Users\K.T\AppData\Local\Programs\Python\Python312\Lib\site-packages\flet\bin\flet\flet.exe
+2025-02-09 13:55:15,239 INFO App session started
+2025-02-09 13:56:12,302 INFO Logger is configured with simple rotating file handler.
+2025-02-09 13:56:12,303 INFO Assets path configured: C:\Users\K.T\Documents\Github\R_ScrapingRank\assets
+2025-02-09 13:56:12,304 INFO Starting up TCP server on localhost:62693
+2025-02-09 13:56:12,307 INFO Flet app has started...
+2025-02-09 13:56:12,307 INFO App URL: tcp://localhost:62693
+2025-02-09 13:56:12,307 INFO Starting Flet View app...
+2025-02-09 13:56:12,308 INFO Flet View found in: C:\Users\K.T\AppData\Local\Programs\Python\Python312\Lib\site-packages\flet\bin\flet\flet.exe
+2025-02-09 13:56:12,473 INFO App session started

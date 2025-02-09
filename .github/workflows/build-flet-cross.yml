@@ -25,14 +25,17 @@ jobs:
           - runs-on: ubuntu-latest
             flet-name: R_ScrapingRank_linux
             assets-name: ":assets"
+            assets_binary-name: ":assets_binary"
             binary-name: R_ScrapingRank_linux.tar.gz
           - runs-on: macos-latest
             flet-name: R_ScrapingRank_macos
             assets-name: ":assets"
+            assets_binary-name: ":assets_binary"
             binary-name: R_ScrapingRank_macos.tar.gz
           - runs-on: windows-latest
             flet-name: R_ScrapingRank_windows
             assets-name: ";assets"
+            assets_binary-name: ";assets_binary"
             binary-name: R_ScrapingRank_windows.zip
     runs-on: ${{ matrix.runs-on }}
     permissions:
@@ -47,9 +50,9 @@ jobs:
       - name: "Build Flet App"
         run: |
           if [ "${{ matrix.runs-on }}" == "windows-latest" ]; then
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" 
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets_binary/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "assets_binary${{ matrix.assets_binary-name }}" --onedir
           else
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}"
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets_binary/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "assets_binary${{ matrix.assets_binary-name }}"
           fi
         shell: bash
       - name: "Linux/MacOS compress"
