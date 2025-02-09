@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-DB_DIR = os.path.join(os.path.dirname(__file__), "..", "db")
+DB_DIR = os.path.join(os.path.dirname(__file__), "..","assets", "db")
 DB_PATH = os.path.join(DB_DIR, "items.db")
 
 if not os.path.exists(DB_DIR):
