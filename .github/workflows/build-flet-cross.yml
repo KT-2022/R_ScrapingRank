@@ -47,9 +47,9 @@ jobs:
       - name: "Build Flet App"
         run: |
           if [ "${{ matrix.runs-on }}" == "windows-latest" ]; then
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "db/items.db:db/items.db" --onedir
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" 
           else
-            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}" --add-binary "db/items.db:db/items.db"
+            flet pack main.py --name ${{ matrix.flet-name }} --icon assets/icon.png --add-data "assets${{ matrix.assets-name }}"
           fi
         shell: bash
       - name: "Linux/MacOS compress"
