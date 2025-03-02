@@ -1,3 +1,7 @@
+# add by myself
+assets_binary/db/items.db
+assets/logs/scrapinglog.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
