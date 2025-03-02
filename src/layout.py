@@ -10,7 +10,7 @@ IMAGE_PATH_RIGHT = os.path.join(current_dir, '..', 'assets_binary', 'image', 'sp
 
 def create_layout(page):
     """レイアウトを作成する関数"""
-    global table, selection_dialog, register_item_id, register_item_name, register_dialog, itemID, register_shop_id
+    global table, selection_dialog, register_item_id, register_item_name, register_dialog, itemID, shop_id, query_input
 
     query_input = ft.TextField(label="検索ワード", width=300)
     dropdown = ft.Dropdown(
@@ -21,7 +21,7 @@ def create_layout(page):
         autofocus=False,
     )
     itemID = ft.TextField(label="商品ID", width=300)
-    register_shop_id = ft.TextField(label="店舗ID", width=150)
+    shop_id = ft.TextField(label="店舗ID", width=150)
     search_button = ft.Container(
         content=ft.ElevatedButton(
             content=ft.Text("検索", size=18, color=ft.colors.WHITE),
@@ -75,20 +75,26 @@ def create_layout(page):
             ft.ControlState.SELECTED: ft.colors.INDIGO_100,
         },
         columns=[
+            ft.DataColumn(label=ft.Text("ID"), visible=False),  # ID列を追加し、非表示に設定
+            ft.DataColumn(label=ft.Text("検索ワード")),
             ft.DataColumn(label=ft.Text("店舗ID")),
             ft.DataColumn(label=ft.Text("商品ID")),
             ft.DataColumn(label=ft.Text("商品名"))
         ],
         rows=[]
     )
+
     register_item_id = ft.TextField(label="商品ID", width=200)
     register_item_name = ft.TextField(label="商品名", width=200)
+    register_shop_id = ft.TextField(label="店舗ID", width=200)
+    register_search_word = ft.TextField(label="検索ワード", width=200)
     register_dialog = ft.AlertDialog(
         title=ft.Text("新しい商品を登録", size=15, weight=ft.FontWeight.BOLD),
         content=ft.Column([
             register_shop_id,
             register_item_id,
-            register_item_name
+            register_item_name,
+            register_search_word
         ]),
         actions=[ft.TextButton("登録")]
     )
@@ -117,7 +123,7 @@ def create_layout(page):
     )
 
     # 必要な変数のリストをすべて返すように更新
-    return query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table, register_item_id, register_item_name
+    return query_input, dropdown, itemID, shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog, table, register_item_id, register_item_name, register_search_word ,register_shop_id
 
 def add_elements_to_page(page, query_input, dropdown, itemID, register_shop_id, search_button, select_button, register_button, note_text, progress_bar, result_text, result_dialog, selection_dialog, register_dialog):
     """ページに要素を追加する関数"""
