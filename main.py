@@ -10,12 +10,12 @@ logger, log_handler = configure_logging()
 def show_snackbar(page, message):
     snackbar = ft.SnackBar(
         content=ft.Text(message, color=ft.colors.WHITE, text_align=ft.TextAlign.CENTER),
-        duration=3000,  # 表示時間（ミリ秒単位）
+        duration=2000,  # 表示時間（ミリ秒単位）
         bgcolor=ft.colors.BLACK54,
         behavior=ft.SnackBarBehavior.FLOATING  # スナックバーを浮動させる
     )
-    page.snack_bar = snackbar
-    page.snack_bar.open = True
+    page.overlay.append(snackbar)
+    snackbar.open = True
     page.update()
 
 def configure_page(page):
